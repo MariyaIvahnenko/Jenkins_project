@@ -1,0 +1,638 @@
+{
+	"info": {
+		"_postman_id": "52dd2dbf-42f2-46e6-ab08-80e98db51077",
+		"name": "Users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29951465"
+	},
+	"item": [
+		{
+			"name": "Registers users in the system.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomName = getRandomString(8);",
+							"const randomLastName = getRandomString(8);",
+							"const randomEmail = `user${Math.floor(Math.random() * 1000)}@test.com`;",
+							"const randomPassword = generateRandomPassword();",
+							"",
+							"",
+							"pm.globals.set(\"randomName\", randomName);",
+							"pm.globals.set(\"randomLastName\", randomLastName);",
+							"pm.globals.set(\"randomEmail\", randomEmail);",
+							"pm.globals.set(\"createdPassword\", randomPassword);",
+							"",
+							"",
+							"console.log(`Generated randomName: ${randomName}`);",
+							"console.log(`Generated randomLastName: ${randomLastName}`);",
+							"console.log(`Generated randomEmail: ${randomEmail}`);",
+							"console.log(`Generated randomPassword: ${randomPassword}`);",
+							"",
+							"function getRandomString(length) {",
+							"  const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';",
+							"  let result = '';",
+							"  for (let i = 0; i < length; i++) {",
+							"    result += letters.charAt(Math.floor(Math.random() * letters.length));",
+							"  }",
+							"  return result;",
+							"}",
+							"",
+							"function generateRandomPassword() {",
+							"  const length = Math.floor(Math.random() * (15 - 8 + 1)) + 8;",
+							"  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';",
+							"  const lowercase = 'abcdefghijklmnopqrstuvwxyz';",
+							"  const numbers = '0123456789';",
+							"  const characters = uppercase + lowercase + numbers;",
+							"",
+							"  let password = '';",
+							"",
+							"  password += numbers.charAt(Math.floor(Math.random() * numbers.length));",
+							"  password += uppercase.charAt(Math.floor(Math.random() * uppercase.length));",
+							"  password += lowercase.charAt(Math.floor(Math.random() * lowercase.length));",
+							"",
+							"  for (let i = 0; i < length - 3; i++) {",
+							"    password += characters.charAt(Math.floor(Math.random() * characters.length));",
+							"  }",
+							"",
+							"  password = password.split('').sort(function () { return 0.5 - Math.random() }).join('');",
+							"",
+							"  return password;",
+							"}",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"{{randomName}}\",\n  \"lastName\": \"{{randomLastName}}\",\n  \"email\": \"{{randomEmail}}\",\n  \"password\": \"{{createdPassword}}\",\n  \"repeatPassword\": \"{{createdPassword}}\"\n}\n"
+				},
+				"url": {
+					"raw": "{{devUrl}}/auth/signup",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edits user's profile",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomName = getRandomString(8);",
+							"const randomLastName = getRandomString(8);",
+							"const randomPhoto = `user-${new Date().getTime()}.jpg`;",
+							"",
+							"",
+							"const randomDateBirth = getRandomDateOfBirth();",
+							"pm.globals.set(\"randomName\", randomName);",
+							"pm.globals.set(\"randomLastName\", randomLastName);",
+							"pm.request.body.update({",
+							"  mode: 'raw',",
+							"  raw: JSON.stringify({",
+							"    \"photo\": randomPhoto,",
+							"    \"name\": randomName,",
+							"    \"lastName\": randomLastName,",
+							"    \"dateBirth\": randomDateBirth,",
+							"    \"country\": \"Ukraine\"",
+							"  })",
+							"});",
+							"",
+							"console.log(`Generated randomName: ${randomName}`);",
+							"console.log(`Generated randomLastName: ${randomLastName}`);",
+							"console.log(`Generated randomPhoto: ${randomPhoto}`);",
+							"console.log(`Generated randomDateBirth: ${randomDateBirth}`);",
+							"",
+							"function getRandomString(length) {",
+							"  const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';",
+							"  let result = '';",
+							"  for (let i = 0; i < length; i++) {",
+							"    result += letters.charAt(Math.floor(Math.random() * letters.length));",
+							"  }",
+							"  return result;",
+							"}",
+							"",
+							"function getRandomDateOfBirth() {",
+							"  const start = new Date(1970, 0, 1);",
+							"  const end = new Date(2000, 11, 31);",
+							"  const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));",
+							"  return randomDate.toISOString();",
+							"}",
+							"",
+							"pm.sendRequest({",
+							"    url: `${pm.variables.get(\"devUrl\")}/users/profile`,",
+							"    method: 'PUT',",
+							"    header: 'Content-Type: application/json',",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"name\": \"{{randomName}}\",",
+							"            \"lastName\": \"{{randomLastName}}\",",
+							"            \"email\": \"{{randomEmail}}\",",
+							"            \"password\": \"{{createdPassword}}\",",
+							"            \"repeatPassword\": \"{{createdPassword}}\"",
+							"        })",
+							"    }",
+							"}, (error, response) => {",
+							"    if (response && response.json()) {",
+							"        const userId = response.json().userId;",
+							"        pm.globals.set(\"userId\", userId);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "s%3A4dnOU73hZsOWt1kRVwVExhD9bswdO2Eb.fwk1PzCfe%2F%2BFtRfdpNkbegLCwfaIdwONUecy3mscX3E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"photo\": \"{{randomPhoto}}\",\n  \"name\": \"{{randomName}}\",\n  \"lastName\": \"{{randomLastName}}\",\n  \"dateBirth\": \"{{randomDateBirth}}\",\n  \"country\": \"Ukraine\"\n}\n"
+				},
+				"url": {
+					"raw": "{{devUrl}}/users/profile",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"users",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gets authenticated user profile data.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{devUrl}}/users/profile",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"users",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit user's settings",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const currencyOptions = ['eur', 'gbp', 'usd', 'uah', 'pln'];",
+							"const distanceUnitsOptions = ['km', 'ml'];",
+							"",
+							"const randomCurrency = currencyOptions[Math.floor(Math.random() * currencyOptions.length)];",
+							"const randomDistanceUnits = distanceUnitsOptions[Math.floor(Math.random() * distanceUnitsOptions.length)];",
+							"",
+							"pm.variables.set(\"currencyVariable\", randomCurrency);",
+							"pm.variables.set(\"distanceUnitsVariable\", randomDistanceUnits);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "s%3A4t7CqS6cFZqSz7Iou3NCoVKHfNsRyFZw.rfvH6QhkOQ97fRmf4bXCE5W9ZCDL2em3d2mPvcQQfxc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"currency\": \"{{currencyVariable}}\",\n  \"distanceUnits\": \"{{distanceUnitsVariable}}\"\n}\n"
+				},
+				"url": {
+					"raw": "{{devUrl}}/users/settings",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"users",
+						"settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gets authenticated user setting data.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{devUrl}}/users/settings",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"users",
+						"settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Changes user's email",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const password = pm.globals.get(\"createdPassword\");",
+							"const newRandomEmail = `testUser${Math.floor(Math.random() * 1000)}@test.com`;",
+							"pm.globals.set(\"randomEmail\", newRandomEmail);",
+							"console.log(`Generated newRandomEmail: ${newRandomEmail}`);",
+							"console.log(`Password: ${password}`);",
+							"pm.request.body = {",
+							"    mode: 'raw',",
+							"    raw: JSON.stringify({",
+							"        \"email\": newRandomEmail,",
+							"        \"password\": password",
+							"    })",
+							"};",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": {{randomEmail}},\n  \"password\": \"{{password}}\"\n}\n"
+				},
+				"url": {
+					"raw": "{{devUrl}}/users/email",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"users",
+						"email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Changes user's password",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const createdPassword = pm.globals.get(\"createdPassword\");",
+							"",
+							"const generateRandomPassword = () => {",
+							"    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';",
+							"    return Array.from({ length: 12 }, () => characters[Math.floor(Math.random() * characters.length)])",
+							"        .reduce((password, char) => password + char, '');",
+							"};",
+							"",
+							"const oldPassword = createdPassword;",
+							"const newPasswordValue = generateRandomPassword();",
+							"",
+							"pm.variables.set('oldPassword', oldPassword);",
+							"pm.variables.set('newPassword', newPasswordValue);",
+							"console.log(`Old Password: ${oldPassword}`);",
+							"console.log(`New Password: ${newPasswordValue}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "s%3A4t7CqS6cFZqSz7Iou3NCoVKHfNsRyFZw.rfvH6QhkOQ97fRmf4bXCE5W9ZCDL2em3d2mPvcQQfxc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"oldPassword\": \"{{oldPassword}}\",\n    \"password\": \"{{newPassword}}\",\n    \"repeatPassword\": \"{{newPassword}}\"\n}\n\n"
+				},
+				"url": {
+					"raw": "{{devUrl}}/users/password",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"users",
+						"password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sends an email with new password to the user's email",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomEmail = pm.globals.get(\"randomEmail\");",
+							"console.log(`Email: ${randomEmail}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": {{randomEmail}}\n}\n\n"
+				},
+				"url": {
+					"raw": "{{devUrl}}/auth/resetPassword",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"auth",
+						"resetPassword"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout users from the system.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const userId = pm.variables.get(\"userId\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{devUrl}}/auth/logout",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Signin users in the system.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomEmail = pm.globals.get(\"randomEmail\");",
+							"const newPassword = pm.variables.get(\"newPassword\") ?? \"89IYpcOh0i4O\";",
+							"",
+							"console.log(`Email: ${randomEmail}`);",
+							"console.log(`Password: ${newPassword}`);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{newPassword}}\",\n  \"remember\": false\n}\n"
+				},
+				"url": {
+					"raw": "{{devUrl}}/auth/signin",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gets authenticated user data.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const userId = pm.variables.get(\"userId\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{devUrl}}/user/current",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"user",
+						"current"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Видалити створеного користувача",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const userId = pm.variables.get(\"userId\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{devUrl}}/users/{{userId}}",
+					"host": [
+						"{{devUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
